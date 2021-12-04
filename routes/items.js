@@ -47,10 +47,10 @@ router.get('/:name', (req, res, next) => {
 router.patch('/:name', (req, res, next) => {
   try {
     let patchName = req.params.name;
-    if (patchName != undefined) {
-      let itemIndex = items.findIndex((x) => x.name == patchName);
-      let name = req.body.name || patchName;
-      let price = req.body.price || item[itemIndex.price];
+    let itemIndex = items.findIndex((x) => x.name == patchName);
+    if (patchName != undefined && itemIndex != -1) {
+      let name = req.body.name ? req.body.name : items[itemIndex.name];
+      let price = req.body.price ? req.body.price : items[itemIndex]['price'];
       items[itemIndex] = { name, price };
       return res.json(items[itemIndex]);
     } else {
@@ -63,8 +63,8 @@ router.patch('/:name', (req, res, next) => {
 
 router.delete('/:name', (req, res, next) => {
   try {
-    let name = req.body.name;
-    let deleteIndex = items.findIndex((x) => x.name === name);
+    let deletedName = req.params.name;
+    let deleteIndex = items.findIndex((x) => x.name == deletedName);
     if (deleteIndex === -1) {
       throw new ExpressError('Item not found', 404);
     } else {
